@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 
 from database import Base
 
+# Промежуточная таблица для связи many-to-many между Program и City
 program_cities_association = Table(
     'program_cities',
     Base.metadata,
@@ -15,7 +16,6 @@ class University(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-    country = Column(String)
 
     programs = relationship("Program", back_populates="university")
 
@@ -33,7 +33,6 @@ class Program(Base):
 class City(Base):
     __tablename__ = 'cities'
     id = Column(Integer, primary_key=True, index=True)
-    # program_id = Column(Integer, ForeignKey('programs.id'))
     name = Column(String, unique=True, nullable=False)
 
     programs = relationship("Program", secondary=program_cities_association, back_populates="cities")

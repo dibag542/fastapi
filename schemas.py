@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 class UniversityBase(BaseModel):
     name: str
-    country: Optional[str] = None
 
 class University(UniversityBase):
     id: int

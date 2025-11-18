@@ -1,13 +1,14 @@
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request, Depends, Form, HTTPException, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from starlette.responses import HTMLResponse
+from typing import List
 from starlette.middleware.base import BaseHTTPMiddleware
 import os
 import logging
 import time
-
+from pydantic import BaseModel
 from crud import get_university
 from schemas import University
 from database import SessionLocal, init_db
@@ -60,18 +61,22 @@ def get_db():
         db.close()
 
 @app.get("/", response_class=HTMLResponse)
-async def search_universities(request: Request, program: str = None, subjects: str = None, city: str = None, db: Session = Depends(get_db)):
-    logger.info("=" * 50)
-    logger.info("ENDPOINT ВЫЗВАН!")
-    logger.info(f"Запрос получен: program={program}, subjects={subjects}, city={city}")
+async def search_universities(
+    request: Request, 
+    subject: List[str] = Query(None), 
+    city: List[str] = Query(None), 
+    db: Session = Depends(get_db)
+):
     try:
-        logger.info("Вызываю get_university...")
-        universities = get_university(db, program=program, subjects=subjects, city=city)
+        logger.info(f"Запрос получен: subject={subject}, city={city}")
+        
+        universities = get_university(db, subjects=subject, cities=city)
         logger.info(f"Найдено университетов: {len(universities)}")
-        logger.info(f"Путь к шаблонам: {os.path.join(BASE_DIR, 'templates')}")
-        logger.info("Формирую ответ...")
-        response = templates.TemplateResponse("search.html", {"request": request, "universities": universities or []})
-        logger.info("Ответ сформирован успешно, возвращаю...")
+        
+        response = templates.TemplateResponse("search.html", {
+            "request": request, 
+            "universities": universities or []
+        })
         return response
     except Exception as e:
         logger.error(f"Ошибка при получении университетов: {e}", exc_info=True)
@@ -90,6 +95,5 @@ async def search_universities(request: Request, program: str = None, subjects: s
             logger.error(f"Критическая ошибка при рендеринге шаблона: {e2}", exc_info=True)
             from fastapi.responses import PlainTextResponse
             return PlainTextResponse(f"Критическая ошибка: {str(e)}\n\nTraceback:\n{error_trace}", status_code=500)
-
 
 

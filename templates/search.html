@@ -7,13 +7,31 @@
 <body>
     <h1>Поиск университетов</h1>
     <form method="get">
-        <label for="program">Программа:</label>
-        <input type="text" id="program" name="program"><br>
-        <label for="subjects">Предметы:</label>
-        <input type="text" id="subjects" name="subjects"><br>
-        <label for="city">Город академической мобильности:</label>
-        <input type="text" id="city" name="city"><br>
-        <button type="submit">Искать</button>
+        <label for="subject">Предметы ЕГЭ:</label>
+        <select id="subject" name="subject" multiple>
+            <option value="биология">Биология</option>
+            <option value="география">География</option>
+            <option value="иностранный_язык">Иностранный язык</option>
+            <option value="информатика_икт">Информатика и ИКТ</option>
+            <option value="история">История</option>
+            <option value="литература">Литература</option>
+            <option value="математика_базовый_уровень">Математика базовый уровень</option>
+            <option value="математика_профильная">Математика профильная</option>
+            <option value="обществознание">Обществознание</option>
+            <option value="русский_язык">Русский язык</option>
+            <option value="физика">Физика</option>
+            <option value="химия">Химия</option>
+        </select><br><br>
+
+        <label for="city">Города академической мобильности:</label>
+        <select id="city" name="city" multiple>
+            <option value="Шанхай">Шанхай</option>
+            <option value="Пекин">Пекин</option>
+            <option value="Харбин">Харбин</option>
+        </select><br><br>
+
+        <input type="submit" value="Искать университеты"/>
+
     </form>
 
     {% if error %}
@@ -27,7 +45,7 @@
         <ul>
             {% for university in universities %}
                 <li>
-                    <strong>{{ university.name }}</strong>{% if university.country %} ({{ university.country }}){% endif %}
+                    <strong>{{ university.name }}</strong>
                     {% if university.programs %}
                         <ul>
                             {% for program in university.programs %}
